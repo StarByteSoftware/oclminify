@@ -497,6 +497,45 @@ class Minifier(c_ast.NodeVisitor):
         return None
 
     def _get_structref_type(self, node):
+        def get_expr_type(expr):
+            if isinstance(expr, c_ast.BinaryOp):
+                return get_expr_type(expr.right)
+            elif isinstance(expr, c_ast.FuncCall):
+                func_name = node.name.name.name
+                func = self._get_function_by_new_name(func_name)
+                if func is None:
+                    return get_builtin_func_type(func_name, expr.args)
+                new_name = func.return_type.name
+                declaration = self._get_declaration_by_new_name(new_name)
+                if declaration:
+                    if declaration.type == "struct":
+                        return declaration.name
+                    else:
+                        return declaration.type
+            elif isinstance(expr, c_ast.Cast):
+                return expr.to_type.type.type.names[0]
+            elif isinstance(expr, c_ast.Constant):
+                return expr.type
+
+            new_name = ""
+            if isinstance(expr, c_ast.ID):
+                new_name = expr.name
+            elif isinstance(expr, c_ast.UnaryOp):
+                new_name = expr.expr.name
+            elif isinstance(expr, c_ast.ArrayRef):
+                new_name = expr.name.name
+            if len(new_name) > 0:
+                declaration = self._get_declaration_by_new_name(new_name)
+                if declaration is not None:
+                    if isinstance(declaration, c_ast.ID):
+                        return declaration.type[0]
+                    else:
+                        if declaration.type == "struct":
+                            return declaration.name
+                        else:
+                            return declaration.type
+            return "void"
+
         def get_builtin_func_type(func_name, args):
             # Extract type of each argument so we can determine the return type
             # of the built-in function. Many, if not most, built-in functions
@@ -506,13 +545,8 @@ class Minifier(c_ast.NodeVisitor):
             # built-in functions, as of OpenCL 1.2, return a pointer type.
             arg_types = []
             for arg in args.exprs:
-                if isinstance(arg, c_ast.ID):
-                    declaration = self._get_declaration_by_new_name(arg.name)
-                    if declaration is not None:
-                        arg_types.append(declaration.type[0])
-                        continue
-                # TODO: Support figuring out the type of an expression.
-                arg_types.append("void")
+                arg_type = get_expr_type(arg)
+                arg_types.append(arg_type)
 
             from oclminify.functions import BUILTIN
             result = BUILTIN.get_func_return_type(func_name, arg_types)
@@ -523,30 +557,12 @@ class Minifier(c_ast.NodeVisitor):
         # through a variable directly. Structs inside of structs are a special
         # case handled by the caller of this function (visit_StructRef()).
         if isinstance(node.name, c_ast.StructRef):
-            return None
-        elif isinstance(node.name, c_ast.FuncCall):
-            func_name = node.name.name.name
-            func = self._get_function_by_new_name(func_name)
-            if func is None:
-                return [get_builtin_func_type(func_name, node.name.args), ]
-            new_name = func.return_type.name
-        elif isinstance(node.name, c_ast.UnaryOp):
-            new_name = node.name.expr.name
-        elif isinstance(node.name, c_ast.ArrayRef):
-            new_name = node.name.name.name
-        else:
-            new_name = node.name.name
+            return None # Special case. See above.
 
-        declaration = self._get_declaration_by_new_name(new_name)
-        if declaration:
-            if declaration.type == "struct":
-                decl_type = declaration.name
-            else:
-                decl_type = declaration.type
-        else:
-            decl_type = ["", ]
-
-        return decl_type
+        result = get_expr_type(node.name)
+        if isinstance(result, Minifier.Declaration) or isinstance(result, list):
+            return result
+        return [result, ]
 
     def _struct_to_declaration(self, node):
         declaration = Minifier.Declaration()

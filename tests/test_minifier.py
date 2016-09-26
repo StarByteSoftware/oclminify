@@ -236,9 +236,7 @@ class TestMinifier(unittest.TestCase):
                 test2 = as_float8(test).s0123;
             }"""
         self.assert_minify(data, "__kernel void a(){int8 b=(int8)0;float4 c=convert_float8(b).lo;c=as_float8(b).lo;}")
-
-    @unittest.expectedFailure  # TODO: Support figuring out the return type of generic built-in functions based off input argument type(s).
-    def test_struct_rvalue_reference_fail(self):
+        # Built-in function with return types dependent on arguments.
         data = r"""
             __kernel void main()
             {
