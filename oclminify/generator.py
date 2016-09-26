@@ -174,6 +174,11 @@ class Generator(OpenCLCGenerator):
             result += "{" + self._generate_grouped_stmts(n.decls) + "}"
         return result
 
+    def visit_StructRef(self, n):
+        if len(n.field.name) == 0:
+            return self._parenthesize_unless_simple(n.name)
+        return super(Generator, self).visit_StructRef(n)
+
     def visit_Switch(self, n):
         result = "switch(" + self.visit(n.cond) + ")"
         result += self._generate_stmt(n.stmt)

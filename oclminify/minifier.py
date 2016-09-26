@@ -617,6 +617,21 @@ class Minifier(c_ast.NodeVisitor):
         return declaration
 
     def _shorten_vector_access(cls, vector_component_count, vector_components_specified):
+        assert(vector_component_count >= 1)
+
+        # For vectors where all components are being accessed in stored order,
+        # use a blank accessor. The entire accessor will be removed in the
+        # generation stage.
+        def sequential_fast_components():
+            return "xyzw"[:vector_component_count]
+
+        def sequential_components():
+            return "0123456789abcdef"[:vector_component_count]
+
+        if vector_components_specified == sequential_fast_components() or \
+           vector_components_specified == "s" + sequential_components():
+            return ""
+
         # For vectors of 1-4 components in the form .s0123, convert to the form .xyzw.
         # According to the standard, the .xyzw syntax is only valid for vectors with
         # no more than 4 components.
@@ -627,10 +642,6 @@ class Minifier(c_ast.NodeVisitor):
         # For vectors of length 2 and 4 using the even and odd syntax, use the
         # shorter .xyzw syntax.
         if vector_component_count == 2 or vector_component_count == 4:
-
-            def sequential_fast_components():
-                return "xyzw"[:vector_component_count]
-
             def even_fast_components():
                 return sequential_fast_components()[::2]
 
@@ -646,11 +657,6 @@ class Minifier(c_ast.NodeVisitor):
         # are shortened to use the lo, hi, even, and odd syntax.
         # https://www.khronos.org/registry/cl/specs/opencl-1.1.pdf#page=167
         elif vector_component_count > 4 and vector_components_specified.startswith("s"):
-            assert(vector_component_count >= 1)
-
-            def sequential_components():
-                return "0123456789abcdef"[0:vector_component_count]
-
             def lo_components():
                 return sequential_components()[:vector_component_count // 2]
 

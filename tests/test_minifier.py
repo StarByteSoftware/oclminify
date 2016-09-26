@@ -252,7 +252,7 @@ class TestMinifier(unittest.TestCase):
             __kernel void main()
             {
                 float4 test = (float4)(0.0f,1.0f,2.0f,3.0f);
-                test = test.s0123; //.xyzw
+                test = test.s0123; //no accessor
 
                 uchar16 test2 = (uchar16)(1);
                 uchar8 test3 = test2.s01234567; //.lo
@@ -263,7 +263,7 @@ class TestMinifier(unittest.TestCase):
                 float2 test4 = test.even; //.xz
                 test4 = test.odd; //.yw
             }"""
-        self.assert_minify(data, "__kernel void a(){float4 b=(float4)(0.0f,1.0f,2.0f,3.0f);b=b.xyzw;uchar16 c=(uchar16)1;uchar8 d=c.lo;d=c.hi;d=c.even;d=c.odd;float2 e=b.xz;e=b.yw;}")
+        self.assert_minify(data, "__kernel void a(){float4 b=(float4)(0.0f,1.0f,2.0f,3.0f);b=b;uchar16 c=(uchar16)1;uchar8 d=c.lo;d=c.hi;d=c.even;d=c.odd;float2 e=b.xz;e=b.yw;}")
 
     def test_enum(self):
         data = r"""
@@ -518,9 +518,7 @@ class TestMinifier(unittest.TestCase):
             }"""
         self.assert_minify(data, "void a(__global float*b,int c,float d[10]){}")
 
-    @unittest.expectedFailure
-    def test_remove_unncessary_vector_indices(self):
-        # TODO: See if this can be implemented easily. This will probably break some of the other tests.
+    def test_remove_unnecessary_vector_accessors(self):
         data = r"""
             __kernel void main()
             {
@@ -528,7 +526,7 @@ class TestMinifier(unittest.TestCase):
                 float4 test2 = test.xyzw;
                 test2 = test.s0123;
             }"""
-        self.assert_minify(data, "__kernel void a(){float4 a=(float4)(0.0f,1.0f,2.0f,3.0f),b=a;b=a;")
+        self.assert_minify(data, "__kernel void a(){float4 b=(float4)(0.0f,1.0f,2.0f,3.0f),c=b;c=b;}")
 
 
 if __name__ == "__main__":
