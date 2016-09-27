@@ -31,11 +31,12 @@ Usage
 -----
 
     oclminify [-h] [--preprocessor-command PREPROCESSOR_COMMAND]
-              [--no-preprocess] [--no-minify] [--compress]
-              [--strip-zlib-header] [--header] [--header-function-args]
-              [--minify-kernel-names] [--global-postfix GLOBAL_POSTFIX]
-              [--try-build] [--output-file OUTPUT_FILE]
-              input 
+              [--preprocessor-no-stdin] [--no-preprocess] [--no-minify]
+			  [--compress] [--strip-zlib-header] [--header]
+			  [--header-function-args] [--minify-kernel-names]
+			  [--global-postfix GLOBAL_POSTFIX] [--try-build]
+			  [--output-file OUTPUT_FILE]
+			  input
 
 oclminify takes a single input file. If the input file is - (a single hyphen), input will be read from STDIN. If the --output-file option is omitted, the output is written to STDOUT.
 
