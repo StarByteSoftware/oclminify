@@ -30,8 +30,11 @@ FUNCTION(OCLMINIFY_MINIFY_SOURCES )
 
 	# Setup defaults for args that were not specified.
 	IF("${OCLMINIFY_MINIFY_SOURCES_PREPROCESSOR_COMMAND}" STREQUAL "")
-		# TODO: Change the default to work with preprocessors other than GCC (and those with compatible options).
-		SET(OCLMINIFY_MINIFY_SOURCES_PREPROCESSOR_COMMAND ${CMAKE_C_COMPILER} -E -undef -P -std=c99 -)
+		IF("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
+			SET(OCLMINIFY_MINIFY_SOURCES_PREPROCESSOR_COMMAND ${CMAKE_C_COMPILER} /EP /u /nologo)
+		ELSE()
+			SET(OCLMINIFY_MINIFY_SOURCES_PREPROCESSOR_COMMAND ${CMAKE_C_COMPILER} -E -undef -P -std=c99 -)
+		ENDIF()
 	ENDIF()
 	IF("${OCLMINIFY_MINIFY_SOURCES_OUTPUT_FILE_PREFIX}" STREQUAL "")
 		SET(OCLMINIFY_MINIFY_SOURCES_OUTPUT_FILE_POSTFIX ".cl.h")
@@ -48,6 +51,14 @@ FUNCTION(OCLMINIFY_MINIFY_SOURCES )
 		SET(OCLMINIFY_COMMAND ${OCLMINIFY_MINIFY_SOURCES_PYTHON_COMMAND} "-m" ${OCLMINIFY_COMMAND})
 	ENDIF()
 
+	# Make oclminify run the preprocessor by passing in a temp file instead
+	# of using stdin when using MSVC. This is required because MSVC does
+	# not support passing source files using stdin.
+	SET(OCLMINIFY_MINIFY_SOURCES_PREPROCESSOR_NO_STDIN "")
+	IF("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
+		SET(OCLMINIFY_MINIFY_SOURCES_PREPROCESSOR_NO_STDIN "--preprocessor-no-stdin")
+	ENDIF()
+
 	# Setup each source file to be minified. Each is given a unique global
 	# postfix so all kernels can be built and run together without their names
 	# colliding.
@@ -58,7 +69,7 @@ FUNCTION(OCLMINIFY_MINIFY_SOURCES )
 		SET(file_output "${_file_name}${OCLMINIFY_MINIFY_SOURCES_OUTPUT_FILE_POSTFIX}")
 		ADD_CUSTOM_COMMAND(
 			OUTPUT ${file_output}
-			COMMAND ${CMAKE_COMMAND} -E env \"PYTHONPATH=${OCLMINIFY_MINIFY_SOURCES_PYTHON_MODULE_PATHS}\" ${OCLMINIFY_COMMAND} ${OCLMINIFY_MINIFY_SOURCES_OPTIONS} --preprocessor-command="${OCLMINIFY_MINIFY_SOURCES_PREPROCESSOR_COMMAND}" --global-postfix="${SOURCE_INDEX}" --output-file="${CMAKE_CURRENT_BINARY_DIR}/${file_output}" "${CMAKE_CURRENT_SOURCE_DIR}/${_file}" 
+			COMMAND ${CMAKE_COMMAND} -E env \"PYTHONPATH=${OCLMINIFY_MINIFY_SOURCES_PYTHON_MODULE_PATHS}\" ${OCLMINIFY_COMMAND} ${OCLMINIFY_MINIFY_SOURCES_OPTIONS} --preprocessor-command="${OCLMINIFY_MINIFY_SOURCES_PREPROCESSOR_COMMAND}" ${OCLMINIFY_MINIFY_SOURCES_PREPROCESSOR_NO_STDIN} --global-postfix="${SOURCE_INDEX}" --output-file="${CMAKE_CURRENT_BINARY_DIR}/${file_output}" "${CMAKE_CURRENT_SOURCE_DIR}/${_file}" 
 			DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${_file}"
 		)
 		LIST(APPEND OUTPUT_FILE_LIST ${file_output})

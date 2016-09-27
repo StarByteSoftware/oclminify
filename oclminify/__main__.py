@@ -26,6 +26,7 @@ def main():
                                      description="Version 0.6.0\nMinify OpenCL source files.",
                                      epilog="OpenCL is a trademark of Apple Inc., used under license by Khronos.\nCopyright (c) 2016 StarByte Software, Inc. All rights reserved.")
     parser.add_argument("--preprocessor-command", type=str, default=DEFAULT_PREPROCESSOR_COMMAND, help="Command to preprocess input source before minification. Defaults to \"%s\"" % DEFAULT_PREPROCESSOR_COMMAND)
+    parser.add_argument("--preprocessor-no-stdin", action="store_true", default=False, help="Pass input to preprocessor using a temporary file instead of stdin.")
     parser.add_argument("--no-preprocess", action="store_true", default=False, help="Skip preprocessing step. Implies --no-minify.")
     parser.add_argument("--no-minify", action="store_true", default=False, help="Skip minification step. Useful when debugging.")
     parser.add_argument("--compress", action="store_true", default=False, help="Compress output using zlib.")
@@ -66,6 +67,7 @@ def main():
     original_data = data
     minifier, data = _do_minify(data,
                                 preprocessor_command=args.preprocessor_command,
+                                preprocessor_no_stdin=args.preprocessor_no_stdin,
                                 minify=not args.no_minify,
                                 minify_kernel_names=(args.minify_kernel_names or len(args.global_postfix) > 0) and not args.no_minify,
                                 global_postfix=args.global_postfix)
