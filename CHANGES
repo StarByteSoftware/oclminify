@@ -1,0 +1,11 @@
+[0.7.0] 2016-??
+- Added support for using MSVC as a preprocessor when using the
+  OCLMINIFY_MINIFY_SOURCES function in examples/oclminify.cmake.
+- Added --preprocessor-no-stdin flag to make oclminify pass input to the
+  preprocessor using a temporary file instead of stdin.
+- Fixed not being able to minify vector component accesses returned from
+  built-in functions that have return types dependent on argument types.
+- Fixed unnecessary vector component accesses not being removed.
+
+[0.6.0] 2016-08-19
+- Initial release.
