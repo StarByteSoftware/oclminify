@@ -71,7 +71,6 @@ The available options are:
   --output-file OUTPUT_FILE
                         File path where output should be saved. Omit to write
                         to stdout.
-
 ```
 
 Examples

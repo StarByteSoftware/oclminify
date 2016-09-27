@@ -1,4 +1,4 @@
-[0.7.0] 2016-??
+[0.7.0] 2016-09-27
 - Added support for using MSVC as a preprocessor when using the
   OCLMINIFY_MINIFY_SOURCES function in examples/oclminify.cmake.
 - Added --preprocessor-no-stdin flag to make oclminify pass input to the

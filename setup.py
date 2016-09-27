@@ -12,7 +12,7 @@ setup(
     description = "Minify OpenCL source files.",
     long_description = long_description,
     license = "BSD",
-    version = "0.6.0",
+    version = "0.7.0",
     author = "StarByte Software, Inc.",
     author_email = "jbendig@starbytesoftware.com",
     maintainer = "James Bendig",
