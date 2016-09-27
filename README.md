@@ -21,7 +21,7 @@ Install
 
 From the command line:
 
-    pip install git+https://github.com/StarByteSoftware/oclminify.git
+    pip install oclminify
 
 If you want oclminify to support a compile check before minification, with an actual OpenCL driver, install pyopencl with:
 
