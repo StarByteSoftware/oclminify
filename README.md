@@ -11,8 +11,8 @@ Prerequisites
 -------------
 
 - [Python®](https://www.python.org/) >= 2.7 (Python 3 is also supported)
-- [pycparser](https://github.com/eliben/pycparser) >= 2.14 (github version is recommended if you need #pragma support)
-- [pycparserext](https://github.com/inducer/pycparserext) >= 2016.1
+- [pycparser](https://github.com/eliben/pycparser) >= 2.17
+- [pycparserext](https://github.com/inducer/pycparserext) >= 2016.2
 - [pyopencl](https://mathema.tician.de/software/pyopencl/) >= 2016.1 (optional, checks if source can be compiled before minifying)
 - [GCC](https://gcc.gnu.org/), [cpp](https://gcc.gnu.org/), [MSVC](https://www.visualstudio.com/) or another C preprocessor
 
