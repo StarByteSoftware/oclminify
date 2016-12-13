@@ -1,3 +1,7 @@
+[0.8.0] 2016-12-13
+- Bumped required versions of pycparser and pycparserext to take advantage of
+  upstream fixes.
+
 [0.7.0] 2016-09-27
 - Added support for using MSVC as a preprocessor when using the
   OCLMINIFY_MINIFY_SOURCES function in examples/oclminify.cmake.

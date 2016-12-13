@@ -12,7 +12,7 @@ from oclminify.build import try_build
 
 def main():
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
-                                     description="Version 0.7.0\nMinify OpenCL source files.",
+                                     description="Version 0.8.0\nMinify OpenCL source files.",
                                      epilog="OpenCL is a trademark of Apple Inc., used under license by Khronos.\nCopyright (c) 2016 StarByte Software, Inc. All rights reserved.")
     parser.add_argument("--preprocessor-command", type=str, default=DEFAULT_PREPROCESSOR_COMMAND, help="Command to preprocess input source before minification. Defaults to \"%s\"" % DEFAULT_PREPROCESSOR_COMMAND)
     parser.add_argument("--preprocessor-no-stdin", action="store_true", default=False, help="Pass input to preprocessor using a temporary file instead of stdin.")
