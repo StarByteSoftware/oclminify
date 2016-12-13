@@ -27,13 +27,8 @@ setup(
     ],
     packages = find_packages(),
     install_requires = [
-        "pycparser>=2.14",
-        "pycparserext>=2016.1",
-    ],
-    dependency_links = [
-        # The 2.14 is over a year old as of 2016-07-15 and doesn't support
-        # pragmas correctly. This commit is much newer and is known to work.
-        "git+https://github.com/eliben/pycparser.git@ffd8cb7dfc4b80c79a500e27736db8f7bfc1186e#egg=pycparser-2.14",
+        "pycparser>=2.17",
+        "pycparserext>=2016.2",
     ],
     extras_require = {
         "build": ["PyOpenCL>=2016.1",],
