@@ -11,17 +11,6 @@ from oclminify.build import try_build
 
 
 def main():
-    # Compatibility check to make sure an old version of pycparser was not
-    # installed by accident. This won't be required once a version of pycparser
-    # newer than 2.14 is released.
-    from pycparser import c_ast
-    if "Pragma" not in dir(c_ast):
-        print("Your version of pycparser is too old.\n#pragma declarations"
-              "will cause minification to fail!\nRun \"pip uninstall "
-              "pycparser && pip install "
-              "git+https://github.com/eliben/pycparser.git@ffd8cb7dfc4b80c79a500e27736db8f7bfc1186e#egg=pycparser-2.14\"",
-              file=sys.stderr)
-
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                      description="Version 0.7.0\nMinify OpenCL source files.",
                                      epilog="OpenCL is a trademark of Apple Inc., used under license by Khronos.\nCopyright (c) 2016 StarByte Software, Inc. All rights reserved.")
